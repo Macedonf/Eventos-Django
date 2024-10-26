@@ -1,0 +1,8 @@
+<h1>Lista de Eventos</h1>
+<ul>
+    {% for Evento in eventos %}
+    <li>{{ Evento.nome_evento}} - {{ Evento.data_inicio }}, {{ Evento.local }}</li>
+    {% endfor %}
+
+
+</ul>
