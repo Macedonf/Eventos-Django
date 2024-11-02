@@ -2,7 +2,12 @@
 <ul>
     {% for Evento in eventos %}
     <li>{{ Evento.nome_evento}} - {{ Evento.data_inicio }}, {{ Evento.local }}</li>
+        <a href="{% url 'detalhe_evento' Evento.id %}">
+            <button>Detalhes do Evento</button>
+        </a>
     {% endfor %}
 
 
 </ul>
+
+

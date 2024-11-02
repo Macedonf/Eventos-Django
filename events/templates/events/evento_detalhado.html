@@ -1,0 +1,7 @@
+<h1>{{ evento.nome }}</h1>
+<p><strong>Data de Início:</strong> {{ evento.data_inicio }}</p>
+<p><strong>Data de Fim:</strong> {{ evento.data_fim }}</p>
+<p><strong>Descrição:</strong> {{ evento.descricao }}</p>
+<p><strong>Local:</strong> {{ evento.local }}</p>
+
+<a href="{% url 'list_events' %}">Voltar para a lista de eventos</a>
