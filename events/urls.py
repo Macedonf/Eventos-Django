@@ -9,4 +9,8 @@ urlpatterns = [
 
     path('<int:evento_id>/', views.detalhe_evento, name='detalhe_evento'),
 
+    path('eventos/adicionar/', views.adicionar_participante, name='adicionar_participante'),
+
+    path('participantes/', views.list_participantes, name='list_participantes'),
+
 ]

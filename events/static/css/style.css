@@ -1,0 +1,32 @@
+/* style.css */
+
+/* Definições gerais */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa; /* Cor de fundo leve */
+    color: #343a40; /* Cor do texto */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #007bff; /* Cor dos títulos */
+}
+
+.container {
+    max-width: 800px; /* Limita a largura do conteúdo */
+}
+
+/* Estilos para botões */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3; /* Cor de fundo ao passar o mouse */
+    border-color: #0056b3;
+}
+
+/* Alertas */
+.alert {
+    margin-top: 20px;
+}
