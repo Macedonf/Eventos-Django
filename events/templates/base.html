@@ -37,7 +37,6 @@
                              <a class="nav-link" href="{% url 'login' %}">Login</a>
                         {% endif %}
 </li>
-                        <!-- Adicione mais links conforme necessário -->
                     </ul>
                     <a class="navbar-brand ms-auto" href="{% url 'index' %}">
                         <img src="{% static 'img/logo.png' %}" alt="Logo" width="80" class="d-inline-block align-text-top">
@@ -49,7 +48,6 @@
 
     <main class="container my-4">
         {% block content %}
-        <!-- Conteúdo padrão -->
         {% endblock %}
     </main>
 
