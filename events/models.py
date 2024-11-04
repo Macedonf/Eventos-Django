@@ -1,8 +1,10 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 #modelo de eventos
 
 class Evento(models.Model):
+    organizador = models.ForeignKey(User, on_delete=models.CASCADE)
     nome_evento = models.CharField(max_length=255)
     data_inicio = models.DateField(null=False)
     data_fim = models.DateField(null=True)

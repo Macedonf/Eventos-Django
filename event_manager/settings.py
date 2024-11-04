@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 from sqlalchemy import event
@@ -119,8 +119,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+LOGIN_URL = '/login/'  # URL de login
+LOGIN_REDIRECT_URL = 'index'  # Redirecionar após o login
+LOGOUT_REDIRECT_URL = 'index'  # Redirecionar após logout
 
-
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "events", "static"),  # Diretório 'static' dentro do app 'events'
+    ]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 

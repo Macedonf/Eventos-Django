@@ -1,4 +1,8 @@
 from datetime import timezone
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse
+from django.http import HttpResponseRedirect
 from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
 from django import forms
@@ -12,30 +16,52 @@ def index(request):
 
 
 #listar eventos
-
+@login_required
 def list_events(request):
-    eventos = Evento.objects.all()
+    eventos = Evento.objects.filter(organizador=request.user)
     return render(request, 'events/list_events.html', {'eventos': eventos})
 
+@login_required
 def detalhe_evento(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
     return render(request, 'events/evento_detalhado.html', {'evento': evento})
 
 
-def adicionar_participante(request):
+@login_required
+def adicionar_participante(request, evento_id):
+    evento = get_object_or_404(Evento, id=evento_id)
     if request.method == 'POST':
         form = ParticipanteForm(request.POST)
         if form.is_valid():
-            participante = form.save(commit=False)  # Não salva ainda
-            participante.data_inscricao = timezone.now()  # Define a data de inscrição
-            participante.save()  # Agora salva o participante
-            return redirect('list_participantes')
+            participante = form.save(commit=False)
+            participante.evento_associado = evento
+            participante.data_inscricao = timezone.now()
+            participante.save()
+            return redirect('list_participantes', evento_id=evento.id)
     else:
         form = ParticipanteForm()
     return render(request, 'events/form_participante.html', {'form': form, 'title': 'Inscrever-se no Evento'})
 
 
+@login_required
+def list_participantes(request, evento_id):
+    evento = get_object_or_404(Evento, id=evento_id)
+    participantes = Participante.objects.filter(evento_associado=evento)
+    return render(request, 'events/participantes_list.html', {'participantes': participantes, 'evento' : evento})
 
-def list_participantes(request):
-    participantes = Participante.objects.all()
-    return render(request, 'events/participantes_list.html', {'participantes': participantes})
+
+def user_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user:
+            login(request, user)
+            return HttpResponseRedirect(reverse('index'))
+        else:
+            return render(request, 'login.html', {'error': 'Credenciais inválidas.'})
+    return render(request, 'login.html')
+
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('index'))

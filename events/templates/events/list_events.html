@@ -1,16 +1,28 @@
 {% extends 'base.html' %}
-{% block title %}title{% endblock %}
+{% block title %}Lista de Eventos{% endblock %}
 
 {% block content %}
-<h1>Lista de Eventos</h1>
-<ul>
-    {% for Evento in eventos %}
-    <li>{{ Evento.nome_evento}} - {{ Evento.data_inicio }}, {{ Evento.local }}</li>
-        <a href="{% url 'detalhe_evento' Evento.id %}">
-            <button>Detalhes do Evento</button>
-        </a>
-    {% endfor %}
-
-</ul>
+<div class="container my-5">
+    <h1 class="text-center mb-4">Lista de Eventos</h1>
+    <div class="row">
+        {% for evento in eventos %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ evento.nome_evento }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Data de Início: {{ evento.data_inicio }}</h6>
+                    <p class="card-text">Local: {{ evento.local }}</p>
+                    <a href="{% url 'detalhe_evento' evento.id %}" class="btn btn-primary">Detalhes do Evento</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-warning" role="alert">
+                Nenhum evento encontrado.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}
-
