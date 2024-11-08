@@ -1,3 +1,4 @@
+
 from datetime import timezone
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -41,6 +42,34 @@ def adicionar_participante(request, evento_id):
     else:
         form = ParticipanteForm()
     return render(request, 'events/form_participante.html', {'form': form, 'title': 'Inscrever-se no Evento'})
+
+@login_required
+def editar_participante(request, evento_id, participante_id):
+    evento = get_object_or_404(Evento, id=evento_id)
+    participante = get_object_or_404(Participante, id=participante_id, evento_associado=evento)
+
+    if request.method == 'POST':
+        form = ParticipanteForm(request.POST, instance=participante)
+        if form.is_valid():
+            form.save()
+            return redirect('list_participantes', evento_id=evento.id)
+    else:
+        form = ParticipanteForm(instance=participante)
+
+    return render(request, 'events/form_participante.html', {'form': form, 'title': 'Editar Participante'})
+
+
+@login_required
+def excluir_participante(request, evento_id, participante_id):
+    evento = get_object_or_404(Evento, id=evento_id)
+    participante = get_object_or_404(Participante, id=participante_id, evento_associado=evento)
+
+    if request.method == 'POST':
+        participante.delete()
+        return redirect('list_participantes', evento_id=evento.id)
+
+
+    return render(request, 'events/excluir_participante.html', {'participante': participante, 'evento': evento})
 
 
 @login_required

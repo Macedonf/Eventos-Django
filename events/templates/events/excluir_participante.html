@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+<h1>Excluir Participante</h1>
+
+{% block content %}
+<p>Tem certeza de que deseja cancelar sua inscrição no evento {{ participante.evento_associado.nome_evento }}?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Excluir Participante</button>
+</form>
+<a href="{% url 'list_participantes' evento_id=participante.evento_associado.id %}" class="btn btn-secondary">Cancelar</a>
+{% endblock %}
