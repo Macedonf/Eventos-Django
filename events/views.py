@@ -2,11 +2,16 @@
 from datetime import timezone
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.template.loader import render_to_string
+from django.contrib import messages
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
 from django import forms
+from django.utils.html import strip_tags
+
+from event_manager.utils import enviar_email
 from events.models import Evento, Participante
 from forms import ParticipanteForm
 
@@ -60,12 +65,25 @@ def editar_participante(request, evento_id, participante_id):
 
 
 @login_required
-def excluir_participante(request, evento_id, participante_id):
+def excluir_participante(request, evento_id, participante_id, mensagem_html=None):
     evento = get_object_or_404(Evento, id=evento_id)
     participante = get_object_or_404(Participante, id=participante_id, evento_associado=evento)
 
     if request.method == 'POST':
         participante.delete()
+
+        email = participante.email
+        assunto = ' Confirmação de Cancelamento de Inscrição no Evento'
+
+        mensagem_html = render_to_string('events/email_cancelamento.html', {
+            'participante': participante,  # Passando o participante correto
+            'evento': evento,  # Passando o evento correto
+            'email': email,})
+
+        envia_email (email, assunto, mensagem_html)
+
+        messages.success(request, "A inscrição foi cancelada e o e-mail de confirmação foi enviado.")
+
         return redirect('list_participantes', evento_id=evento.id)
 
 
@@ -94,3 +112,13 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     return HttpResponseRedirect(reverse('index'))
+
+
+def envia_email(email, assunto, mensagem_html):
+    plain_message = strip_tags(mensagem_html)
+    enviar_email(
+        destinatario=email,
+        assunto=assunto,
+        mensagem=plain_message,
+        mensagem_html=mensagem_html
+    )

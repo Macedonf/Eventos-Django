@@ -24,6 +24,7 @@ header {
     color: #fff;
 }
 
+
 .navbar-brand,
 .nav-link {
     color: #0c0c0c !important; /* Mantém as cores do texto em branco */
@@ -34,7 +35,7 @@ header {
 }
 
 .navbar-brand img {
-    max-height: 40px; /* Ajusta a altura da logo */
+    max-height: 50px; /* Ajusta a altura da logo */
 }
 
 /* Estilo para o Container Principal */

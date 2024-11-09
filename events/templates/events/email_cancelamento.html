@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cancelamento de Inscrição no evento {{evento.nome_evento}}</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0; color: #333;">
+    <div style="background-color: #ffffff; max-width: 600px; margin: 30px auto; padding: 20px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);">
+        <!-- Cabeçalho -->
+        <div style="background-color: #4CAF50; color: #ffffff; padding: 20px; text-align: center; border-radius: 10px 10px 0 0;">
+            <h1 style="font-size: 28px; margin: 0;">Cancelamento de Inscrição</h1>
+            <p style="font-size: 18px;">Evento: {{evento.nome_evento}}</p>
+        </div>
+
+        <!-- Corpo do E-mail -->
+        <div style="padding: 20px; font-size: 16px; line-height: 1.8;">
+            <p>Olá, {{ participante.nome }}!</p>
+            <p>Confirmamos que sua inscrição no evento <strong>{{ evento.nome_evento }}</strong> foi cancelada conforme sua solicitação.</p>
+            <p>Sentimos muito por não poder contar com sua presença desta vez. Se desejar se inscrever novamente ou participar de futuros eventos, não hesite em nos contatar. Estamos sempre à disposição para ajudá-lo.</p>
+            <p><strong>E-mail para dúvidas:</strong> <a href="mailto:estudomacedoti@gmail.com" style="color: #4CAF50; text-decoration: none; font-weight: bold;">estudomacedoti@gmail.com</a></p>
+            <p><a href="http://www.exemplo.com" style="display: inline-block; background-color: #4CAF50; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 20px;">Ver próximos eventos</a></p>
+        </div>
+
+        <!-- Rodapé -->
+        <div style="text-align: center; padding: 15px; background-color: #f9f9f9; color: #888; font-size: 12px; border-radius: 0 0 10px 10px; margin-top: 30px;">
+            <p>Este é um e-mail automático. Por favor, não responda.</p>
+            <p>&copy; 2024 Gestão de Eventos Macedo. Todos os direitos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>
