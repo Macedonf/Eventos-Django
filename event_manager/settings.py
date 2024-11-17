@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 
 from sqlalchemy import event
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,19 +23,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-0e8%7i%5i3&n_w7pvb^r$a-)+**5t_qkktb7l#$2$0q!ldcw6o'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
-EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST='smtp.gmail.com'
-EMAIL_PORT=587
-EMAIL_USE_TLS=True
-EMAIL_HOST_USER='estudomacedoti@gmail.com'
-EMAIL_HOST_PASSWORD=''
+
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT', cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
 
 # Application definition
 
@@ -125,12 +127,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-LOGIN_URL = '/login/'  # URL de login
-LOGIN_REDIRECT_URL = 'index'  # Redirecionar após o login
-LOGOUT_REDIRECT_URL = 'index'  # Redirecionar após logout
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = 'index'
+LOGOUT_REDIRECT_URL = 'index'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "events", "static"),  # Diretório 'static' dentro do app 'events'
+    os.path.join(BASE_DIR, "events", "static"),
     ]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

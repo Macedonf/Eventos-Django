@@ -12,6 +12,10 @@
     <a href="{% url 'list_events' %}" class="btn btn-primary">Voltar para a lista de eventos</a>
     <a href="{% url 'list_participantes' evento_id=evento.id %}" class="btn btn-primary">Lista de Participantes</a>
     <a href="{% url 'adicionar_participante' evento_id=evento.id %}" class="btn btn-primary me-2">Inscrever-se no Evento</a>
+
+    {% if user.is_authenticated %}
+        <a href="{% url 'relatorio_evento' evento_id=evento.id %}" class="btn btn-primary">Relatório do Evento</a>
+    {% endif %}
 </div>
 
 {% endblock %}

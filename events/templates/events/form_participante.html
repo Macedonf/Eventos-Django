@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+
 {% block title %}Inscreve-se no Evento{% endblock %}
 
 {% block content %}
@@ -48,6 +49,30 @@
         {% if form.evento_associado.errors %}
             <div class="alert alert-danger">
                 {% for error in form.evento_associado.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-6">
+        {{ form.valor_ingresso.label_tag }}
+        {{ form.valor_ingresso }}
+        {% if form.valor_ingresso.errors %}
+            <div class="alert alert-danger">
+                {% for error in form.valor_ingresso.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-6">
+        {{ form.ingresso.label_tag }}
+        {{ form.ingresso }}
+        {% if form.ingresso.errors %}
+            <div class="alert alert-danger">
+                {% for error in form.ingresso.errors %}
                     <p>{{ error }}</p>
                 {% endfor %}
             </div>

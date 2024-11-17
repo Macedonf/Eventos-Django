@@ -11,7 +11,8 @@
                 <th scope="col">Nome</th>
                 <th scope="col">Email</th>
                 <th scope="col">Data de Inscrição</th>
-                <th scope="col">Evento Associado</th>
+                <th scope="col">Evento</th>
+                <th scope="col">Pagamento</th>
                 <th scope="col">Ações</th>
             </tr>
         </thead>
@@ -20,12 +21,21 @@
             <tr>
                 <td>{{ participante.nome }}</td>
                 <td>{{ participante.email }}</td>
-                <td>{{ participante.data_inscricao|date:"d/m/Y H:i" }}</td>
+                <td>{{ participante.data_inscricao|date:"d/m/Y" }}</td>
                 <td>{{ participante.evento_associado.nome_evento }}</td>
+                <td>
+                    {% if participante.ingresso == 'PAGO' %}
+                    Pago
+                {% else %}
+                    Não Pago
+                {% endif %}</td>
                 <td>
             <!-- Botão de Editar -->
                     <a href="{% url 'editar_participante' evento_id=participante.evento_associado.id participante_id=participante.id %}" class="btn btn-warning btn-sm ml-2">Editar</a>
                     <a href="{% url 'excluir_participante' evento_id=participante.evento_associado.id participante_id=participante.id %}" class="btn btn-danger btn-sm ml-2">Cancelar Inscrição</a>
+                    {% if participante.ingresso == 'NAO_PAGO' %}
+                    <a href="{% url 'ingresso_pago' participante_id=participante.id %}" class="btn btn-success btn-sm ml-2">Pagar</a>
+                    {% endif %}
             <!-- Botão de Excluir -->
         </td>
 

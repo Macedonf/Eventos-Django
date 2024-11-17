@@ -1,31 +1,115 @@
-
-from datetime import timezone
-from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.template.loader import render_to_string
-from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+from django.contrib import messages
+from django.db.models import Sum
 from django.utils import timezone
-from django.shortcuts import render, get_object_or_404, redirect
-from django import forms
 from django.utils.html import strip_tags
-
-from event_manager.utils import enviar_email
 from events.models import Evento, Participante
 from forms import ParticipanteForm
+from event_manager.utils import enviar_email
+from django.template.loader import render_to_string
 
 
-#Pagina principal
 def index(request):
-    return render(request, 'events/index.html')
+    evento_id = Evento.objects.first().id if Evento.objects.exists() else None
+    return render(request, 'events/index.html', {'evento_id': evento_id})
 
 
-#listar eventos
 @login_required
 def list_events(request):
     eventos = Evento.objects.filter(organizador=request.user)
     return render(request, 'events/list_events.html', {'eventos': eventos})
+
+
+@login_required
+def relatorio_eventos(request, evento_id):
+    try:
+        evento = get_object_or_404(Evento, id=evento_id, organizador=request.user)
+        participantes = Participante.objects.filter(evento_associado=evento)
+
+        total_inscritos = participantes.count()
+        total_pagantes = participantes.filter(ingresso='PAGO').count()
+        total_nao_pagantes = participantes.filter(ingresso='NAO_PAGO').count()
+        total_pago = participantes.filter(ingresso='PAGO').aggregate(total_pago=Sum('valor_ingresso'))['total_pago'] or 0
+
+        relatorio = {
+            'total_inscritos': total_inscritos,
+            'total_pagantes': total_pagantes,
+            'total_nao_pagantes': total_nao_pagantes,
+            'total_pago': total_pago,
+        }
+
+        return render(request, 'events/relatorio_evento.html', {'evento': evento, 'relatorio': relatorio})
+    except Evento.DoesNotExist:
+        messages.error(request, 'Evento não encontrado ou você não tem permissão para acessar.')
+        return redirect('list_events')
+
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.db.models import Sum
+from events.models import Evento, Participante
+
+from django.shortcuts import render
+from django.db.models import Sum
+from django.contrib.auth.decorators import login_required
+from .models import Evento, Participante
+
+
+@login_required
+def relatorio_geral(request):
+    # Buscar todos os eventos do usuário logado
+    eventos = Evento.objects.filter(organizador=request.user)
+
+    # Inicializar os totais
+    total_pagantes = 0
+    total_nao_pagantes = 0
+    total_pago = 0
+    total_nao_pago = 0
+
+    eventos_data = []
+
+    for evento in eventos:
+        # Contar participantes pagantes e não pagantes
+        pagantes_count = evento.participante_set.filter(ingresso='PAGO').count()
+        nao_pagantes_count = evento.participante_set.filter(ingresso='NAO_PAGO').count()
+
+        # Calcular total pago e total não pago
+        total_pago_evento = evento.participante_set.filter(ingresso='PAGO').aggregate(Sum('valor_ingresso'))[
+                                'valor_ingresso__sum'] or 0
+        total_nao_pago_evento = evento.participante_set.filter(ingresso='NAO_PAGO').aggregate(Sum('valor_ingresso'))[
+                                    'valor_ingresso__sum'] or 0
+
+        # Atualizar totais gerais
+        total_pagantes += pagantes_count
+        total_nao_pagantes += nao_pagantes_count
+        total_pago += total_pago_evento
+        total_nao_pago += total_nao_pago_evento
+
+        # Adicionar dados do evento
+        eventos_data.append({
+            'evento': evento,
+            'pagantes_count': pagantes_count,
+            'nao_pagantes_count': nao_pagantes_count,
+            'total_pago_evento': total_pago_evento,
+            'total_nao_pago_evento': total_nao_pago_evento,
+        })
+
+    # Gerar o contexto para o template
+    contexto = {
+        'eventos_data': eventos_data,
+        'total_pagantes': total_pagantes,
+        'total_nao_pagantes': total_nao_pagantes,
+        'total_pago': total_pago,
+        'total_nao_pago': total_nao_pago,
+    }
+
+    # Renderizar o template com os dados
+    return render(request, 'events/relatorio_geral.html', contexto)
+
 
 @login_required
 def detalhe_evento(request, evento_id):
@@ -95,6 +179,20 @@ def list_participantes(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
     participantes = Participante.objects.filter(evento_associado=evento)
     return render(request, 'events/participantes_list.html', {'participantes': participantes, 'evento' : evento})
+
+@login_required
+def ingresso_pago(request, participante_id):
+    participante=get_object_or_404(Participante,id=participante_id)
+
+    if participante.ingresso == 'NAO_PAGO':
+        participante.ingresso = 'PAGO'
+    else:
+         participante.ingresso = 'NAO_PAGO'
+
+    participante.save()
+
+    return redirect('list_participantes', evento_id=participante.evento_associado.id)
+
 
 
 def user_login(request):
