@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Buscar Inscrições</h1>
+
+<form method="get" action="{% url 'pesquisa_eventos' %}" class="row g-3 mb-4">
+    <div class="col-md-4">
+        {{ form.evento.label_tag }}
+        {{ form.evento }}
+    </div>
+    <div class="col-md-3">
+        {{ form.data_inicio.label_tag }}
+        {{ form.data_inicio }}
+    </div>
+    <div class="col-md-3">
+        {{ form.data_fim.label_tag }}
+        {{ form.data_fim }}
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary mt-4 w-100">Buscar</button>
+    </div>
+</form>
+
+<h2>Resultados</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Evento</th>
+            <th>Nome do Participante</th>
+            <th>Data de Inscrição</th>
+            <th>Ingresso</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for inscricao in inscricoes %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ inscricao.evento_associado.nome_evento }}</td>
+            <td>{{ inscricao.nome }}</td>
+            <td>{{ inscricao.data_inscricao }}</td>
+            <td>{{ inscricao.ingresso }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="text-center">Nenhuma inscrição encontrada.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

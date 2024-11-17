@@ -1,16 +1,18 @@
+import csv
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
 from django.db.models import Sum
 from django.utils import timezone
 from django.utils.html import strip_tags
 from events.models import Evento, Participante
-from forms import ParticipanteForm
+from forms import ParticipanteForm, PesquisaForm
 from event_manager.utils import enviar_email
 from django.template.loader import render_to_string
+
 
 
 def index(request):
@@ -61,7 +63,6 @@ from .models import Evento, Participante
 
 @login_required
 def relatorio_geral(request):
-    # Buscar todos os eventos do usuário logado
     eventos = Evento.objects.filter(organizador=request.user)
 
     # Inicializar os totais
@@ -73,7 +74,6 @@ def relatorio_geral(request):
     eventos_data = []
 
     for evento in eventos:
-        # Contar participantes pagantes e não pagantes
         pagantes_count = evento.participante_set.filter(ingresso='PAGO').count()
         nao_pagantes_count = evento.participante_set.filter(ingresso='NAO_PAGO').count()
 
@@ -83,13 +83,11 @@ def relatorio_geral(request):
         total_nao_pago_evento = evento.participante_set.filter(ingresso='NAO_PAGO').aggregate(Sum('valor_ingresso'))[
                                     'valor_ingresso__sum'] or 0
 
-        # Atualizar totais gerais
         total_pagantes += pagantes_count
         total_nao_pagantes += nao_pagantes_count
         total_pago += total_pago_evento
         total_nao_pago += total_nao_pago_evento
 
-        # Adicionar dados do evento
         eventos_data.append({
             'evento': evento,
             'pagantes_count': pagantes_count,
@@ -98,7 +96,6 @@ def relatorio_geral(request):
             'total_nao_pago_evento': total_nao_pago_evento,
         })
 
-    # Gerar o contexto para o template
     contexto = {
         'eventos_data': eventos_data,
         'total_pagantes': total_pagantes,
@@ -107,8 +104,42 @@ def relatorio_geral(request):
         'total_nao_pago': total_nao_pago,
     }
 
-    # Renderizar o template com os dados
     return render(request, 'events/relatorio_geral.html', contexto)
+
+
+from django.http import HttpResponse
+import csv
+from .models import Evento
+
+def exportar_relatorio_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="relatorio_geral.csv"'
+    response.write('\ufeff')
+
+    writer = csv.writer(response)
+    writer.writerow(['Evento', 'Participante', 'nome_evento', 'data_inicio', 'nome', 'ingresso'])
+
+    eventos = Evento.objects.all()
+
+
+    for evento in eventos:
+
+        participantes = evento.participante_set.all()
+
+
+        for participante in participantes:
+            writer.writerow([
+                evento.nome_evento,
+                participante.nome,
+                evento.nome_evento,
+                evento.data_inicio,
+                participante.nome,
+                participante.ingresso,
+            ])
+
+    return response
+
+
 
 
 @login_required
@@ -220,3 +251,28 @@ def envia_email(email, assunto, mensagem_html):
         mensagem=plain_message,
         mensagem_html=mensagem_html
     )
+
+
+from django.db.models import Q
+
+def pesquisa_eventos(request):
+    form = PesquisaForm(request.GET or None)
+    inscricoes = Participante.objects.all()  # Buscar todas as inscrições inicialmente
+
+    if form.is_valid():
+        evento = form.cleaned_data.get("evento")
+        data_inicio = form.cleaned_data.get("data_inicio")
+        data_fim = form.cleaned_data.get("data_fim")
+
+        # Filtro por evento
+        if evento:
+            inscricoes = inscricoes.filter(evento_associado__nome_evento__icontains=evento)
+
+        # Filtro por data de inscrição
+        if data_inicio:
+            inscricoes = inscricoes.filter(data_inscricao__gte=data_inicio)
+        if data_fim:
+            inscricoes = inscricoes.filter(data_inscricao__lte=data_fim)
+
+    context = {"form": form, "inscricoes": inscricoes}
+    return render(request, "events/pesquisa.html", context)

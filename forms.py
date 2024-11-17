@@ -35,3 +35,20 @@ class ParticipanteForm(forms.ModelForm):
                 raise forms.ValidationError("Este e-mail já está cadastrado para este evento.")
 
         return cleaned_data
+
+class PesquisaForm(forms.Form):
+        evento = forms.CharField(
+            required=False,
+            label="Evento",
+            widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Nome do evento"})
+        )
+        data_inicio = forms.DateField(
+            required=False,
+            label="Data de Início",
+            widget=forms.DateInput(attrs={"type": "date", "class": "form-control"})
+        )
+        data_fim = forms.DateField(
+            required=False,
+            label="Data de Fim",
+            widget=forms.DateInput(attrs={"type": "date", "class": "form-control"})
+        )

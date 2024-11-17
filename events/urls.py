@@ -27,4 +27,8 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
+    path('search/', views.pesquisa_eventos, name='pesquisa_eventos'),
+
+    path('exportar_relatorio_csv/', views.exportar_relatorio_csv, name='exportar_relatorio_csv'),
+
 ]
