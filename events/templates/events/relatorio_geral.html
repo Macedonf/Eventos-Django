@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Relatório Geral de Eventos</h1>
+
+    <div class="mt-4">
+        <h3>Dados Gerais</h3>
+        <p><strong>Total de Pagantes:</strong> {{ total_pagantes }}</p>
+        <p><strong>Total de Não Pagantes:</strong> {{ total_nao_pagantes }}</p>
+        <p><strong>Total Pago:</strong> R$ {{ total_pago|floatformat:2 }}</p>
+        <p><strong>Total Não Pago:</strong> R$ {{ total_nao_pago|floatformat:2 }}</p>
+    </div>
+
+    <hr>
+
+    <h3>Detalhes dos Eventos</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nome do Evento</th>
+                <th>Data de Início</th>
+                <th>Participantes Pagantes</th>
+                <th>Participantes Não Pagantes</th>
+                <th>Total Pago</th>
+                <th>Total Não Pago</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in eventos_data %}
+                <tr>
+                    <td>{{ data.evento.nome_evento }}</td>
+                    <td>{{ data.evento.data_inicio }}</td>
+                    <td>{{ data.pagantes_count }}</td>
+                    <td>{{ data.nao_pagantes_count }}</td>
+                    <td>R$ {{ data.total_pago_evento|floatformat:2 }}</td>
+                    <td>R$ {{ data.total_nao_pago_evento|floatformat:2 }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mt-4">
+        <a href="{% url 'list_events' %}" class="btn btn-primary">Voltar para a lista de eventos</a>
+    </div>
+{% endblock %}

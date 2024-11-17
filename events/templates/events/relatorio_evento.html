@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Relatório do Evento - {{ evento.nome_evento }}{% endblock %}
+
+{% block content %}
+  <h2 class="mb-4">Relatório do Evento: {{ evento.nome_evento }}</h2>
+
+  <div class="card">
+    <div class="card-header">
+      <h5 class="card-title">Informações do Evento</h5>
+    </div>
+    <div class="card-body">
+      <p><strong>Data de Início:</strong> {{ evento.data_inicio }}</p>
+      <p><strong>Local:</strong> {{ evento.local }}</p>
+      <p><strong>Descrição:</strong> {{ evento.descricao|default:"Não fornecida" }}</p>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <h4>Relatório de Inscrições</h4>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Total de Inscritos</th>
+          <th scope="col">Total de Pagantes</th>
+          <th scope="col">Total de Não Pagantes</th>
+          <th scope="col">Total Pago</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ relatorio.total_inscritos }}</td>
+          <td>{{ relatorio.total_pagantes }}</td>
+          <td>{{ relatorio.total_nao_pagantes }}</td>
+          <td>R$ {{ relatorio.total_pago|floatformat:2 }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-4">
+    <h5>Participantes:</h5>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Nome</th>
+          <th scope="col">E-mail</th>
+          <th scope="col">Ingresso</th>
+          <th scope="col">Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for participante in evento.participante_set.all %}
+          <tr>
+            <td>{{ participante.nome }}</td>
+            <td>{{ participante.email }}</td>
+            <td>{{ participante.ingresso }}</td>
+            <td>R$ {{ participante.valor_ingresso|floatformat:2 }}</td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="4">Não há participantes registrados.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-4">
+    <a href="{% url 'list_events' %}" class="btn btn-secondary">Voltar para a lista de eventos</a>
+  </div>
+{% endblock %}
